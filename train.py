@@ -19,7 +19,7 @@ tokenizer = AutoTokenizer.from_pretrained(model_name) # !!!! The tokinezer is th
 tokenizer.pad_token = tokenizer.eos_token
 
 #   bnb_config = BitsAndBytesConfig(
-#   load_in_4bit = True,
+#   load_in_4bit = True, 
 #   bnb_4bit_quant_type = "nf4",
 #   bnb_4bit_compute_dtype = torch.float16,
 #   )
