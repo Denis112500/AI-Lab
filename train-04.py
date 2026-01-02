@@ -5,8 +5,8 @@ from transformers import TextStreamer
 # Setup the Model Name 
 model_name = "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit"  # !!! Helping the GPU to actually download the model !!!
 max_seq_length = 2048
-dtype = None           # Half Precision method (Uses only half of the VRAM it's supposed to use) In this case 2.5 out of 5
-load_in_4bit = True    # Load the model in 4bit precision (Even lower VRAM usage, but slower)
+dtype = None           # Set to None for auto-detect (Float16 for RTX 5060)
+load_in_4bit = True    # Load the model in 4bit precision (Lower VRAM usage)
 
 
 
@@ -35,7 +35,7 @@ system_prompt = "You are a helpful AI assistnat running locally on a RTX 5060." 
 
 stop_token_id = tokenizer.convert_tokens_to_ids("<|eot_id|>")  # Define stop token to end generation
 
-
+# Starting Chat Loop 
 while True:
     user_input = input("\nUser: ")
 
@@ -46,9 +46,10 @@ while True:
     #2.Preparing Input (Translation)
     messages = [
         {"role": "system", "content": system_prompt},  # System prompt to guide the model's behavior
-        {"role": "user" , "content": user_input}   # Organized in a structured list (USER vs AI)
+        {"role": "user" , "content": user_input}       # Organized in a structured list (USER vs AI)
     ]
 
+    # Human Text -> Numbers (Tokenization) -> Tensors (Blocks of numbers for GPU)
     inputs = tokenizer.apply_chat_template(
         conversation = messages,                        # The structured list
         tokenize = True,                                # Tokenizes the input text
@@ -62,13 +63,13 @@ while True:
     _ = model.generate(
         input_ids = inputs,                     # "model_inputs" is the container of the tensor and "input_ids" are the integers inside the tensor [<-Tensor [101]<-Integer ]
         streamer = text_streamer,               # Streamer to print the output in real-time
-        max_new_tokens = 2048,                   # Max of words that the model can generate
+        max_new_tokens = 2048,                  # Max of words that the model can generate
         pad_token_id=tokenizer.eos_token_id,    # Padding token to avoid errors
         temperature = 0.3,                      # Controls how creative the model can be | To low => robotic/factual responses | To High => Total gibberish   //Tested\\
         top_p = 0.9,                            # Nucleus sampling to enhance response quality
         repetition_penalty = 1.25,              # Penalizes repetition to enhance response diversity
         do_sample = True,                       # Enables sampling for more varied responses
-        use_cache = True                        # Speeds up generation by caching past key values
+        use_cache = True                        # IMPORTANT: Reuses previous math so the GPU doesn't recalculate the whole prompt every word.
     )
 
     #Decoding Response (Translation back to human language)
