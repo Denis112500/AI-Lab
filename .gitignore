@@ -1,1 +1,6 @@
 venv/
+lora_model/
+outputs/
+__pycache__/
+*.pt
+*.safetensors

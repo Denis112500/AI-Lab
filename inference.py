@@ -3,7 +3,7 @@ from unsloth import FastLanguageModel
 from transformers import TextStreamer
 
 # Setup the Model Name 
-model_name = "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit"  # !!! Helping the GPU to actually download the model !!!
+model_name = "lora_model"  # !!! Helping the GPU to actually download the model !!!
 max_seq_length = 2048
 dtype = None           # Set to None for auto-detect (Float16 for RTX 5060)
 load_in_4bit = True    # Load the model in 4bit precision (Lower VRAM usage)
