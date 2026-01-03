@@ -31,7 +31,7 @@ print("Chatbot is ready! Type 'exit' to stop.")
 print("-" * 50)
 
 text_streamer = TextStreamer(tokenizer, skip_prompt=True, skip_special_tokens=True)  # Streamer to print the output in real-time
-system_prompt = "You are a helpful AI assistnat running locally on a RTX 5060."      # System psystem_prompt = "You are a helpful AI assistnat running locally on a RTX 5060."      # System prompt to guide the model's behavior
+system_prompt = "You are a helpful AI assistant running locally on a RTX 5060."      # System prompt to guide the model's behavior
 
 stop_token_id = tokenizer.convert_tokens_to_ids("<|eot_id|>")  # Define stop token to end generation
 

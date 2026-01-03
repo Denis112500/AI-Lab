@@ -1,8 +1,26 @@
 # Llama 3 Fine-Tuning with Unsloth
 
-## 🧠 Core Concepts (The "Why")
+## Core Concepts (The "Why")
 
-Before running the code, it is important to understand the specific parts of the "brain" we are training. This script uses **LoRA (Low-Rank Adaptation)**, which freezes the main model and only trains small "adapter" layers. This makes training much faster and requires less memory.
+**Hardware**  This project initially started on an **AMD GPU (RX 6600)** using the ROCm platform. However, due to driver issues and knowing that Nvidia is better in this kind of work, the final training workflow was migrated to an **Nvidia RTX 5060** to leverage the native CUDA support in Unsloth.
+
+*  Note: The "Troubleshooting" section at the bottom of this README preserves the fixes discovered during the AMD phase for anyone attempting this on Radeon hardware.
+
+* This project is made for self-development and learning purposes.
+
+* This repository documents my experiments fine-tuning **Llama-3 8B** on consumer hardware (originally tested on AMD, finalized on Nvidia RTX 5060).
+
+* The goal was to create a local AI assistant that "knows who it is" using **LoRA (Low-Rank Adaptation)** and the **Unsloth** library for optimization.
+
+* Before running the code, it is important to understand the specific parts of the "brain" we are training. This script uses **LoRA (Low-Rank Adaptation)**, which freezes the main model and only trains small "adapter" layers. This makes training much faster and requires less memory.
+
+## Project Structure
+
+* **`train.py`**: The "Teacher" script. It loads the base model, applies LoRA adapters, and fine-tunes it on custom data.
+* **`inference.py`**: The "Chatbot" script. It loads the saved adapters and lets you chat with the model in real-time.
+* **`knowledge.json`**: The dataset. A custom JSON file containing the identity and knowledge I wanted the AI to learn.
+
+# Theory 
 
 ### The Attention Mechanism (Target Modules)
 In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These represent the **Attention Mechanism**, which allows the model to process context. Imagine the model is a librarian:
@@ -22,7 +40,7 @@ In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These r
 ### Other Modules
 * **`gate_proj`, `up_proj`, `down_proj`:** These are the **Feed Forward Layers** (the "thinking" layers). After the attention mechanism gathers information, these layers process it to reach a conclusion.
 
-## ⚙️ Configuration & Model Loading
+## Configuration & Model Loading
 
 * This section imports necessary libraries and sets up the base model.
 
@@ -39,7 +57,7 @@ In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These r
 ```python
 # model, tokenizer = FastLanguageModel.from_pretrained(...)
 ```
-### 🧩 LoRA Adapter Configuration
+### LoRA Adapter Configuration
 
 * This step is where the "learning" magic happens. Instead of retraining the entire brain (which is huge), we attach small, trainable adapter layers to specific parts of the model.
 
@@ -98,7 +116,7 @@ In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These r
 
     * A special initialization method that can help when training very deep 4-bit models. We are using standard 4-bit loading, so we don't need this specific config.
 
-## 📚 Data Preparation & Formatting
+## Data Preparation & Formatting
 
 * This section loads your custom data (`knowledge.json`) and reshapes it into a format the model can understand.
 
@@ -134,7 +152,7 @@ alpaca_prompt = """Below is an instruction...
     * The zip function grabs the first item from each list and bundles them together, then the second item from each list, and so on.
 
 
-## 📚 General Trainer Settings
+## General Trainer Settings
 
 * **`dataset_num_proc = 2`:** 
     * This uses 2 CPU cores to process the data faster before feeding it to the GPU.
@@ -145,7 +163,7 @@ alpaca_prompt = """Below is an instruction...
 
     * False: Keeps examples separate. We use False here for simplicity and to prevent context bleeding between different unrelated examples.
 
-## ⚙️ Training Auguments (Hyperparameters)
+## Training Arguments (Hyperparameters)
 
 * Inside TrainingArguments, we define the specific rules for the training run:
 
@@ -202,7 +220,7 @@ alpaca_prompt = """Below is an instruction...
 * **`output_dir = "outputs"`:** 
     * The folder where checkpoints (saves during training) will be stored.
 
-## 💾 Saving the Model
+## Saving the Model
 
 * **`After training is complete, the script saves the new "LoRA Adapters" to your disk.`**
 
@@ -212,3 +230,33 @@ alpaca_prompt = """Below is an instruction...
     * lora_model folder: This will contain the small adapter files (usually < 100MB).
 
 ### Usage: You will point your inference script (e.g., inference.py) to this folder to load your fine-tuned chatbot.
+
+## Troubleshooting & Errors
+    
+* **`Security Error (apt vs. dpkg)`**
+
+    * **The Issue:** When installing local .deb files via sudo apt install ./file.deb, Ubuntu switches to the _apt user. This user is sandboxed and cannot access files inside personal /home/ directories.
+
+    * **The Fix:** Use dpkg (which runs as root and ignores the sandbox) followed by a dependency fix.
+        Bash
+
+        * `Force install the deb file`
+            sudo dpkg -i amdgpu-install_6.2.60200-1_all.deb
+
+        * `Fix missing dependencies immediately after`
+            sudo apt install -f -y
+
+* **`RuntimeError: HIP Error (Navi 21 vs Navi 23)`**
+
+    * **The Issue:** The AMD RX 6600 (Navi 23) is not officially supported by older ROCm versions, which default to Navi 21 (RX 6800/6900). Attempting to run AI workloads results in a crash.
+
+    * **The Fix:** Override the graphics version to "trick" the software into recognizing the card as a supported architecture (RDNA 2).
+
+        * `Temporary (One session , had to run this everytime i started the project)`
+            export HSA_OVERRIDE_GFX_VERSION=10.3.0
+
+
+# Related tools
+
+* I built a custom PHP/HTML Knowledge Base to log these specific "Runtime" and "Security" errors.
+* It helps track the exact terminal commands and workarounds required to reproduce this environment in the future.
