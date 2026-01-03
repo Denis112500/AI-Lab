@@ -260,3 +260,7 @@ alpaca_prompt = """Below is an instruction...
 
 * I built a custom PHP/HTML Knowledge Base to log these specific "Runtime" and "Security" errors.
 * It helps track the exact terminal commands and workarounds required to reproduce this environment in the future.
+
+# Acknowledgements
+* **Unsloth Library:** For making fine-tuning faster.
+* **Generative AI:** Used for code assistance, drafting documentation, and summarizing theoretical concepts
