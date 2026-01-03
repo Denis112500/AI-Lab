@@ -22,7 +22,7 @@
 
 # Theory 
 
-### The Attention Mechanism (Target Modules)
+## The Attention Mechanism (Target Modules)
 In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These represent the **Attention Mechanism**, which allows the model to process context. Imagine the model is a librarian:
 
 * **`q_proj` (Query):** The **Question** the model asks.
@@ -40,11 +40,11 @@ In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These r
 ### Other Modules
 * **`gate_proj`, `up_proj`, `down_proj`:** These are the **Feed Forward Layers** (the "thinking" layers). After the attention mechanism gathers information, these layers process it to reach a conclusion.
 
-## Configuration & Model Loading
+# Configuration & Model Loading
 
 * This section imports necessary libraries and sets up the base model.
 
-### Key Configurations
+## Key Configurations
 * **`max_seq_length = 2048`**: This is the model's **Context Window**. It determines how much text (prompt + response) the model can "remember" at one time.
     * *Note:* Higher numbers allow for longer conversations but require more VRAM.
 
@@ -53,11 +53,11 @@ In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These r
     
     * We force **4-bit** precision, which shrinks the model size significantly (like compressing a massive image) so it fits on consumer GPUs (like an RTX 3060/4060) without losing much intelligence.
 
-### Loading the Model
+## Loading the Model
 ```python
 # model, tokenizer = FastLanguageModel.from_pretrained(...)
 ```
-### LoRA Adapter Configuration
+## LoRA Adapter Configuration
 
 * This step is where the "learning" magic happens. Instead of retraining the entire brain (which is huge), we attach small, trainable adapter layers to specific parts of the model.
 
@@ -65,7 +65,7 @@ In the code, you will see `target_modules` like `q_proj`, `k_proj`, etc. These r
 # model = FastLanguageModel.get_peft_model(...)
 ```
 
-### Advanced LoRA Parameters
+## Advanced LoRA Parameters
 * **`r = 16 (Rank):`** 
     * This determines the "size" of the new information the model can learn.
 
@@ -229,9 +229,9 @@ alpaca_prompt = """Below is an instruction...
 
     * lora_model folder: This will contain the small adapter files (usually < 100MB).
 
-### Usage: You will point your inference script (e.g., inference.py) to this folder to load your fine-tuned chatbot.
+* Usage: You will point your inference script (e.g., inference.py) to this folder to load your fine-tuned chatbot.
 
-## Troubleshooting & Errors
+# Troubleshooting & Errors
     
 * **`Security Error (apt vs. dpkg)`**
 
