@@ -5,3 +5,4 @@ __pycache__/
 *.pt
 *.safetensors
 unsloth_compiled_cache/
+.vscode/
