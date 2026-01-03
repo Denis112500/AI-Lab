@@ -2,7 +2,7 @@
 
 ## Core Concepts (The "Why")
 
-**Hardware**  This project initially started on an **AMD GPU (RX 6600)** using the ROCm platform. However, due to driver issues and knowing that Nvidia is better in this kind of work, the final training workflow was migrated to an **Nvidia RTX 5060** to leverage the native CUDA support in Unsloth.
+**Hardware:**  This project initially started on an **AMD GPU (RX 6600)** using the ROCm platform. However, due to driver issues and knowing that Nvidia is better in this kind of work, the final training workflow was migrated to an **Nvidia RTX 5060** to leverage the native CUDA support in Unsloth.
 
 *  Note: The "Troubleshooting" section at the bottom of this README preserves the fixes discovered during the AMD phase for anyone attempting this on Radeon hardware.
 
