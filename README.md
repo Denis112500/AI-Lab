@@ -263,4 +263,4 @@ alpaca_prompt = """Below is an instruction...
 
 # Acknowledgements
 * **Unsloth Library:** For making fine-tuning faster.
-* **Generative AI:** Used for code assistance, drafting documentation, and summarizing theoretical concepts
+* **Generative AI:** Used for code assistance, drafting documentation, and summarizing theoretical concepts.
